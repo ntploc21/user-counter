@@ -12,13 +12,13 @@ logger:
   level: debug
 
 database:
-  host: 127.0.0.1
+  host: mysql
   port: 3306
-  username: myuser
+  username: mysql
   password: MyUs3rP@ss123
-  databaseName: myapp
+  databaseName: user-counter
 
 redis:
   addrs:
-    - 127.0.0.1:6379
+    - redis:6379
   password: redispassword123

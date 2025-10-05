@@ -1,6 +1,20 @@
 version: '3.8'
 
 services:
+  backend:
+    container_name: onboard_backend
+    image: locntp/user-counter:v0.0.1
+    networks:
+      - onboard
+    depends_on:
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./config:/app/config
+    ports:
+      - "8080:8080"
   #  onboard:
   #    container_name: onboard_backend
   #    networks:
@@ -41,7 +55,7 @@ services:
       timeout: 10s
 
   mysql:
-    user : mysql
+    user: mysql
     container_name: onboard_mysql
     image: mysql:8.0
     shm_size: 4g
@@ -57,7 +71,7 @@ services:
     restart: always
     volumes:
       - ./mysqldata:/var/lib/mysql
-      - ./config/mysql:/docker-entrypoint-initdb.d
+#      - ./config/mysql:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "--host=localhost", "--user=mysql", "--password=${MYSQL_PASSWORD}"]
       interval: 30s
