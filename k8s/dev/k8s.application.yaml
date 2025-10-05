@@ -25,9 +25,23 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
           ports:
             - containerPort: 8088
+          volumeMounts:
+            - name: app-config
+              mountPath: /app/config
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox
+          command: ['sh', '-c', 'until nc -z locntp-counter-db 3306; do echo waiting for mysql; sleep 2; done;']
+        - name: wait-for-redis
+          image: busybox
+          command: ['sh', '-c', 'until nc -z locntp-counter-kv 6379; do echo waiting for redis; sleep 2; done;']
+      volumes:
+        - name: app-config
+          configMap:
+            name: app-config
 #          envFrom:
 #            - secretRef:
 #                name: locntp-counter-env

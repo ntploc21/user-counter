@@ -25,22 +25,22 @@ spec:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mysql-secret
+                  name: locntp-counter-env
                   key: mysql-root-password
             - name: MYSQL_DATABASE
               valueFrom:
                 secretKeyRef:
-                  name: mysql-secret
+                  name: locntp-counter-env
                   key: mysql-database
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: mysql-secret
+                  name: locntp-counter-env
                   key: mysql-user
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mysql-secret
+                  name: locntp-counter-env
                   key: mysql-password
           resources:
             requests:
@@ -50,21 +50,21 @@ spec:
               memory: "1Gi"
               cpu: "500m"
           volumeMounts:
-            - name: mysql-config
-              mountPath: /etc/mysql/conf.d
+#            - name: mysql-config
+#              mountPath: /etc/mysql/conf.d
             - name: mysql-data
               mountPath: /var/lib/mysql
-            - name: mysql-init-scripts
-              mountPath: /docker-entrypoint-initdb.d
+#            - name: mysql-init-scripts
+#              mountPath: /docker-entrypoint-initdb.d
       volumes:
-        - name: mysql-config
-          configMap:
-            name: mysql-config
+#        - name: mysql-config
+#          configMap:
+#            name: mysql-config
         - name: mysql-data
           emptyDir: { }
-        - name: mysql-init-scripts
-          configMap:
-            name: mysql-init-scripts
+#        - name: mysql-init-scripts
+#          configMap:
+#            name: mysql-init-scripts
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -94,7 +94,7 @@ spec:
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: redis-secret
+              name: locntp-counter-env
               key: redis-password
         resources:
           requests:
@@ -104,14 +104,14 @@ spec:
             memory: "256Mi"
             cpu: "200m"
         volumeMounts:
-          - name: redis-config
-            mountPath: /usr/local/etc/redis
+#          - name: redis-config
+#            mountPath: /usr/local/etc/redis
           - name: redis-data
             mountPath: /data
       volumes:
-        - name: redis-config
-          configMap:
-            name: redis-config
+#        - name: redis-config
+#          configMap:
+#            name: redis-config
         - name: redis-data
           emptyDir: { }
 
