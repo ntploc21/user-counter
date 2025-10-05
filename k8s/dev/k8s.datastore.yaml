@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locntp-counter-db
+  namespace: locntp
+  labels:
+    app: locntp-counter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locntp-counter-db
+  template:
+    metadata:
+      labels:
+        app: locntp-counter-db
+    spec:
+      containers:
+        - name: locntp-counter-db
+          image: mysql:8.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-root-password
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-database
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-password
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          volumeMounts:
+            - name: mysql-config
+              mountPath: /etc/mysql/conf.d
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+            - name: mysql-init-scripts
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: mysql-config
+          configMap:
+            name: mysql-config
+        - name: mysql-data
+          emptyDir: { }
+        - name: mysql-init-scripts
+          configMap:
+            name: mysql-init-scripts
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locntp-counter-kv
+  namespace: locntp
+  labels:
+    app: locntp-counter
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locntp-counter-kv
+  template:
+    metadata:
+      labels:
+        app: locntp-counter-kv
+    spec:
+      containers:
+      - name: locntp-counter-kv
+        image: redis:7.2.4-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 6379
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: redis-password
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        volumeMounts:
+          - name: redis-config
+            mountPath: /usr/local/etc/redis
+          - name: redis-data
+            mountPath: /data
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config
+        - name: redis-data
+          emptyDir: { }
+

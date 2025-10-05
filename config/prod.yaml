@@ -1,0 +1,24 @@
+title: locntp-user-counter
+env: PROD
+isProduction: true
+
+api:
+  port: 8080
+  debug: false
+  swagger:
+    enabled: false
+
+logger:
+  level: info
+
+database:
+  host: placeholder
+  port: placeholder
+  username: placeholder
+  password: placeholder
+  databaseName: placeholder
+
+redis:
+  addrs:
+    - placeholder:placeholder
+  password: placeholder

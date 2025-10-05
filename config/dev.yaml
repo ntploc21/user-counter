@@ -1,0 +1,24 @@
+env: development
+isProduction: false
+
+api:
+  host: 0.0.0.0
+  port: 8080
+  debug: true
+  swagger:
+    enabled: true
+
+logger:
+  level: debug
+
+database:
+  host: 127.0.0.1
+  port: 3306
+  username: myuser
+  password: MyUs3rP@ss123
+  databaseName: myapp
+
+redis:
+  addrs:
+    - 127.0.0.1:6379
+  password: redispassword123

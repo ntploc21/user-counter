@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  #  onboard:
+  #    container_name: onboard_backend
+  #    networks:
+  #      - onboard
+  #    environment:
+  #      AUTO_MIGRATE: ${AUTO_MIGRATE:-FALSE}
+  #    env_file:
+  #      - ./.env
+  #    build:
+  #      context: ./
+  #      dockerfile: Dockerfile
+  #    depends_on:
+  #      - redis
+  #      - mysql
+  #    ports:
+  #      - "8088:8088"
+  #    restart: unless-stopped
+  #    volumes:
+  #      - ./onboarddata:/core/data
+
+  redis:
+    user : redis
+    container_name: onboard_redis
+    image: redis:7.2.4-alpine
+    networks:
+      - onboard
+    ports:
+      - "${REDIS_PORT}:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - ./redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      retries: 3
+      start_period: 5s
+      timeout: 10s
+
+  mysql:
+    user : mysql
+    container_name: onboard_mysql
+    image: mysql:8.0
+    shm_size: 4g
+    networks:
+      - onboard
+    ports:
+      - '${MYSQL_PORT}:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_USER=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    restart: always
+    volumes:
+      - ./mysqldata:/var/lib/mysql
+      - ./config/mysql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--host=localhost", "--user=mysql", "--password=${MYSQL_PASSWORD}"]
+      interval: 30s
+      retries: 3
+      start_period: 5s
+      timeout: 10s
+
+volumes:
+  mysqldata:
+  cache:
+
+networks:
+  onboard:
+    driver: bridge

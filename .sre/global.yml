@@ -1,0 +1,9 @@
+sonarqube:
+  tag:
+    portfolio: portfolio-technology-operation
+    squad: platform
+devClusters: "zlp-k8s-dev-1"
+qcClusters: "zlp-k8s-dev-1"
+serviceProtocols: "http" # optional, default is "http"
+configType: "yaml" # optional, default is "yaml"
+language: "GO"

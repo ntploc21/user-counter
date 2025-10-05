@@ -1,0 +1,20 @@
+replicas: 1
+resources:
+  memory: 512Mi
+  cpu: 1
+monitor:
+  metrics: false
+  uptime:
+    http:
+      enabled: false
+      endpoint:
+    grpc:
+      enabled: false
+      endpoint:
+log:
+  enable: true
+  pattern: ^\[(.*?)\]
+config:
+  type: yaml
+protocols:
+  - http
