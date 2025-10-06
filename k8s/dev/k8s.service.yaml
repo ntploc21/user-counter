@@ -7,12 +7,12 @@ metadata:
     app: locntp-counter-service
 
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: locntp-counter
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 8080
 
 ---
@@ -30,7 +30,7 @@ spec:
     - protocol: TCP
       port: 6379
       targetPort: 6379
-  type: NodePort
+  type: ClusterIP
 
 ---
 apiVersion: v1
@@ -47,4 +47,4 @@ spec:
     - protocol: TCP
       port: 3306
       targetPort: 3306
-  type: NodePort
+  type: ClusterIP

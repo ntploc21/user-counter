@@ -17,17 +17,17 @@ spec:
     spec:
       containers:
         - name: locntp-counter
-          image: locntp/user-counter:v0.0.1
+          image: ntploc21/user-counter:v0.0.1
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
-            limits:
               memory: "512Mi"
               cpu: "500m"
-          imagePullPolicy: Never
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          imagePullPolicy: Always
           ports:
-            - containerPort: 8088
+            - containerPort: 8080
           volumeMounts:
             - name: app-config
               mountPath: /app/config

@@ -87,10 +87,10 @@ func (s *Server) CorsMiddleware() {
 
 // rateLimitMiddleware implements rate limiting
 func (s *Server) RateLimitMiddleware() {
-	// Create a rate limiter: 100 requests per minute
+	// Create a rate limiter: 10000 requests per second
 	rate := limiter.Rate{
-		Period: 1 * time.Minute,
-		Limit:  100,
+		Period: 1 * time.Second,
+		Limit:  10000,
 	}
 	store := memory.NewStore()
 	instance := limiter.New(store, rate)
