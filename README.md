@@ -82,7 +82,7 @@
 
 #### Kubernetes Deployment Diagram
 
-TBU
+![kubernetes-deployment-user-counter.png](assets/images/kubernetes-deployment-user-counter.png)
 
 ### API Document
 
@@ -124,7 +124,7 @@ TBU
 ## Software Design
 ### System Design
 
-TBU
+![software-archiecture-user-counter.png](assets/images/software-archiecture-user-counter.png)
 
 ### MySQL Database Design
 Schema

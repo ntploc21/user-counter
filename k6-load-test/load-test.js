@@ -18,6 +18,12 @@ export default function () {
         },
     });
     check(createRes, { 'create user counter status is 201': (r) => r.status === 201 });
+    if (createRes.status !== 201) {
+        // print error and return if user creation fails
+        console.error('User creation failed:', createRes.body);
+        return;
+    }
+
     let userId = createRes.json().data.id;
 
     // 2. Increase user counter
