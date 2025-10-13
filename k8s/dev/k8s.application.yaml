@@ -34,10 +34,10 @@ spec:
       initContainers:
         - name: wait-for-mysql
           image: busybox
-          command: ['sh', '-c', 'until nc -z locntp-counter-db 3306; do echo waiting for mysql; sleep 2; done;']
+          command: ['sh', '-c', 'until nc -z locntp-counter-db-0.locntp-counter-db 3306; do echo waiting for mysql; sleep 2; done;']
         - name: wait-for-redis
           image: busybox
-          command: ['sh', '-c', 'until nc -z locntp-counter-kv 6379; do echo waiting for redis; sleep 2; done;']
+          command: ['sh', '-c', 'until nc -z locntp-counter-kv-0.locntp-counter-kv 6379; do echo waiting for redis; sleep 2; done;']
       volumes:
         - name: app-config
           configMap:

@@ -3,15 +3,28 @@ import { check, sleep } from 'k6';
 
 export let options = {
     stages: [
-        { duration: '30s', target: 200 }, // Ramp-up to 200 users over 30 seconds
-        { duration: '1m', target: 200 },  // Stay at 200 users for 1 minute
-        { duration: '10s', target: 0 },   // Ramp-down to 0 users over 10 seconds
+        { duration: '5m', target: 100 }, // Ramp-up to 100 users over 5 minutes
+        { duration: '5m', target: 300 }, // Ramp-up to 300 users over 5 minutes
+        { duration: '5m', target: 600 }, // Stay at 600 users for 5 minutes
+        { duration: '5m', target: 800 },  // Stay at 800 users for 5 minutes
+        { duration: '3m', target: 200 }, // Ramp-down to 200 users over 3 minutes
+        { duration: '2m', target: 0 },   // Ramp-down to 0 users over 2 minutes
     ],
 };
 
+// random generate username function
+function generateUsername() {
+    // Combine timestamp + random 3-digit number + worker ID
+    // This gives ~10^12 unique possibilities
+    const timestamp = Date.now().toString(36); // time component (base36 compress)
+    const random = Math.floor(Math.random() * 1e9).toString(36); // random part
+    return `user_${timestamp}_${random}`;
+}
+
+
 export default function () {
     // 1. Create user counter
-    let username = 'user' + Math.floor(Math.random() * 1000000);
+    let username = generateUsername();
     let createRes = http.post('http://locntp-user.zalopay.vn/api/v1/users', JSON.stringify({ username: username }), {
         headers: {
             'Content-Type': 'application/json',

@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: locntp-counter-db
   namespace: locntp
@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       app: locntp-counter-db
+  serviceName: locntp-counter-db
   template:
     metadata:
       labels:
@@ -56,18 +57,18 @@ spec:
               mountPath: /var/lib/mysql
 #            - name: mysql-init-scripts
 #              mountPath: /docker-entrypoint-initdb.d
-      volumes:
-#        - name: mysql-config
-#          configMap:
-#            name: mysql-config
-        - name: mysql-data
-          emptyDir: { }
-#        - name: mysql-init-scripts
-#          configMap:
-#            name: mysql-init-scripts
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+      spec:
+        storageClassName: local-path
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 512Mi
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: locntp-counter-kv
   namespace: locntp
@@ -79,6 +80,7 @@ spec:
   selector:
     matchLabels:
       app: locntp-counter-kv
+  serviceName: locntp-counter-kv
   template:
     metadata:
       labels:
@@ -108,10 +110,13 @@ spec:
 #            mountPath: /usr/local/etc/redis
           - name: redis-data
             mountPath: /data
-      volumes:
-#        - name: redis-config
-#          configMap:
-#            name: redis-config
-        - name: redis-data
-          emptyDir: { }
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        storageClassName: local-path
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 256Mi
 
