@@ -3,13 +3,15 @@ package app
 import (
 	"fmt"
 
+	"github.com/go-redis/redis_rate/v10"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
 type Application struct {
-	MySQL *gorm.DB
-	Redis *redis.Client
+	MySQL        *gorm.DB
+	Redis        *redis.Client
+	RedisLimiter *redis_rate.Limiter
 }
 
 func NewApplication() Application {
@@ -21,11 +23,12 @@ func NewApplication() Application {
 	}
 	app.MySQL = mysql
 
-	redisDB, err := NewRedisInMemoryDatabase()
+	redisDB, redisLimiter, err := NewRedisInMemoryDatabase()
 	if err != nil {
 		return Application{}
 	}
 	app.Redis = redisDB
+	app.RedisLimiter = redisLimiter
 
 	return *app
 }
@@ -55,7 +58,7 @@ func StartServer() {
 	// Setup middleware in order of execution
 	ginServer.CorsMiddleware()
 	ginServer.SecurityMiddleware()
-	ginServer.RateLimitMiddleware()
+	ginServer.RateLimitMiddleware(application.RedisLimiter)
 	ginServer.RouteHandler(application.MySQL, application.Redis)
 
 	// Start the server

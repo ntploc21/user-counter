@@ -7,6 +7,7 @@ import (
 	"locntp-user-counter/internal/models"
 	"time"
 
+	"github.com/go-redis/redis_rate/v10"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
@@ -85,11 +86,12 @@ func CloseMySqlDatabase(database *gorm.DB) error {
 	return nil
 }
 
-func NewRedisInMemoryDatabase() (*redis.Client, error) {
+func NewRedisInMemoryDatabase() (*redis.Client, *redis_rate.Limiter, error) {
 	cfg := config.GetAppConfig().Redis
 
 	// Support both single and cluster mode
 	var client *redis.Client
+	var limiter *redis_rate.Limiter
 	if len(cfg.Addrs) == 1 {
 		// Single node mode
 		client = redis.NewClient(&redis.Options{
@@ -122,11 +124,13 @@ func NewRedisInMemoryDatabase() (*redis.Client, error) {
 
 	if err := client.Ping(ctx).Err(); err != nil {
 		logrus.WithError(err).Error("Failed to connect to Redis")
-		return nil, err
+		return nil, nil, err
 	}
 
+	limiter = redis_rate.NewLimiter(client)
+
 	logrus.Info("Successfully connected to Redis")
-	return client, nil
+	return client, limiter, nil
 }
 
 func CloseRedisInMemoryDatabase(redis *redis.Client) error {

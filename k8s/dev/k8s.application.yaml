@@ -17,27 +17,27 @@ spec:
     spec:
       containers:
         - name: locntp-counter
-          image: locntp/user-counter:v0.0.1
+          image: ntploc21/user-counter:v0.0.1
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
-            limits:
               memory: "512Mi"
               cpu: "500m"
-          imagePullPolicy: Never
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          imagePullPolicy: Always
           ports:
-            - containerPort: 8088
+            - containerPort: 8080
           volumeMounts:
             - name: app-config
               mountPath: /app/config
       initContainers:
         - name: wait-for-mysql
           image: busybox
-          command: ['sh', '-c', 'until nc -z locntp-counter-db 3306; do echo waiting for mysql; sleep 2; done;']
+          command: ['sh', '-c', 'until nc -z locntp-counter-db-0.locntp-counter-db 3306; do echo waiting for mysql; sleep 2; done;']
         - name: wait-for-redis
           image: busybox
-          command: ['sh', '-c', 'until nc -z locntp-counter-kv 6379; do echo waiting for redis; sleep 2; done;']
+          command: ['sh', '-c', 'until nc -z locntp-counter-kv-0.locntp-counter-kv 6379; do echo waiting for redis; sleep 2; done;']
       volumes:
         - name: app-config
           configMap:

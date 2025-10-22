@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis_rate/v10"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/ulule/limiter/v3"
@@ -86,11 +87,35 @@ func (s *Server) CorsMiddleware() {
 }
 
 // rateLimitMiddleware implements rate limiting
-func (s *Server) RateLimitMiddleware() {
-	// Create a rate limiter: 100 requests per minute
+func (s *Server) RateLimitMiddleware(cacheLimiter *redis_rate.Limiter) {
+
+	// If Redis rate limiter is provided, use it
+	if cacheLimiter != nil {
+		var requestRate = 10000
+		s.app.Use(func(c *gin.Context) {
+			context := c.Request.Context()
+			res, err := cacheLimiter.Allow(context, c.ClientIP(), redis_rate.PerSecond(requestRate))
+			if err != nil {
+				c.AbortWithStatus(http.StatusInternalServerError)
+				return
+			}
+
+			if res.Allowed == 0 {
+				c.AbortWithStatus(http.StatusTooManyRequests)
+				return
+			}
+
+			c.Next()
+		})
+		return
+	}
+	var requestRate int64 = 10000
+	// Fallback to using in-memory rate limiter
+	// Create a rate limiter: 10000 requests per second
+
 	rate := limiter.Rate{
-		Period: 1 * time.Minute,
-		Limit:  100,
+		Period: 1 * time.Second,
+		Limit:  requestRate,
 	}
 	store := memory.NewStore()
 	instance := limiter.New(store, rate)

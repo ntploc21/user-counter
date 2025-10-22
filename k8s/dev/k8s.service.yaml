@@ -7,12 +7,12 @@ metadata:
     app: locntp-counter-service
 
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: locntp-counter
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 8080
 
 ---
@@ -30,8 +30,7 @@ spec:
     - protocol: TCP
       port: 6379
       targetPort: 6379
-  type: NodePort
-
+  clusterIP: None   # Headless service required for StatefulSet
 ---
 apiVersion: v1
 kind: Service
@@ -47,4 +46,4 @@ spec:
     - protocol: TCP
       port: 3306
       targetPort: 3306
-  type: NodePort
+  clusterIP: None   # Headless service required for StatefulSet

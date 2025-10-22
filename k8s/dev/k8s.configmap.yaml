@@ -15,7 +15,7 @@ data:
       level: debug
 
     database:
-      host: locntp-counter-db
+      host: locntp-counter-db-0.locntp-counter-db
       port: 3306
       username: mysql
       password: MyUs3rP@ss123
@@ -23,7 +23,7 @@ data:
 
     redis:
       addrs:
-        - locntp-counter-kv:6379
+        - locntp-counter-kv-0.locntp-counter-kv:6379
       password: redispassword123
 kind: ConfigMap
 metadata:
